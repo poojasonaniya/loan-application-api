@@ -48,20 +48,21 @@ export class LoansService {
   }
 
   async approveLoan(id: number): Promise<void> {
-    // const loan = await this.loanRepository.findById(id);
-    // if (!loan) {
-    //   throw new NotFoundException('Loan not found');
-    // }
-    // loan.status = 'APPROVED';
-    // await this.loanRepository.save(loan);
+    const loan = this.getLoanById(id);
+    if (!loan) {
+      throw new NotFoundException('Loan not found');
+    }
+
+    loan.status = 'APPROVED';
   }
 
   getLoanById(id: number): Loan {
-    return this.loans.find((loan) => loan.id === id);
+    console.log(this.loans);
+    return this.loans.find((loan) => loan.id == id);
   }
 
   getLoansByCustomerId(customerId: string): Loan[] {
-    return this.loans.filter((loan) => loan.customerId === customerId);
+    return this.loans.filter((loan) => loan.customerId == customerId);
   }
 
   addRepayment(loanId: number, amount: number): void {
@@ -72,7 +73,7 @@ export class LoansService {
     }
 
     const scheduledRepayment = loan.repayments.find(
-      (repayment) => repayment.status === 'PENDING',
+      (repayment) => repayment.status == 'PENDING',
     );
 
     if (!scheduledRepayment) {
@@ -83,12 +84,14 @@ export class LoansService {
       scheduledRepayment.status = 'PAID';
 
       const allRepaymentsPaid = loan.repayments.every(
-        (repayment) => repayment.status === 'PAID',
+        (repayment) => repayment.status == 'PAID',
       );
 
       if (allRepaymentsPaid) {
         loan.status = 'PAID';
       }
+    } else {
+      throw new Error(`Payment should be equa to ${scheduledRepayment.amount}`);
     }
   }
 }
